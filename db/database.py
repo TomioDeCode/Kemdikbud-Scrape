@@ -1,238 +1,120 @@
-import sqlite3
-
+import os
+from supabase import create_client, Client
 
 class DatabaseManager:
-    def __init__(self, database_path):
-        self.conn = sqlite3.connect(database_path)
-        self.cursor = self.conn.cursor()
-        self.setup_database()
+    def __init__(self, supabase_url, supabase_key):
+        self.url = supabase_url
+        self.key = supabase_key
+        self.client = create_client(self.url, self.key)
 
-    def setup_database(self):
-        tables = [
-            (
-                "nasional",
-                [
-                    "id INTEGER PRIMARY KEY",
-                    "nama TEXT",
-                    "url TEXT",
-                    "Wilayah TEXT",
-                    "Total_Jml TEXT",
-                    "Total_N TEXT",
-                    "Total_S TEXT",
-                    "TK_Jml TEXT",
-                    "TK_N TEXT",
-                    "TK_S TEXT",
-                    "KB_Jml TEXT",
-                    "KB_N TEXT",
-                    "KB_S TEXT",
-                    "TPA_Jml TEXT",
-                    "TPA_N TEXT",
-                    "TPA_S TEXT",
-                    "SPS_Jml TEXT",
-                    "SPS_N TEXT",
-                    "SPS_S TEXT",
-                    "PKBM_Jml TEXT",
-                    "PKBM_N TEXT",
-                    "PKBM_S TEXT",
-                    "SKB_Jml TEXT",
-                    "SKB_N TEXT",
-                    "SKB_S TEXT",
-                    "SD_Jml TEXT",
-                    "SD_N TEXT",
-                    "SD_S TEXT",
-                    "SMP_Jml TEXT",
-                    "SMP_N TEXT",
-                    "SMP_S TEXT",
-                    "SMA_Jml TEXT",
-                    "SMA_N TEXT",
-                    "SMA_S TEXT",
-                    "SMK_Jml TEXT",
-                    "SMK_N TEXT",
-                    "SMK_S TEXT",
-                    "SLB_Jml TEXT",
-                    "SLB_N TEXT",
-                    "SLB_S TEXT",
-                    "progress INTEGER DEFAULT 0",
-                ],
-            ),
-            (
-                "provinsi",
-                [
-                    "id INTEGER PRIMARY KEY",
-                    "nama TEXT",
-                    "url TEXT",
-                    "Wilayah TEXT",
-                    "Total_Jml TEXT",
-                    "Total_N TEXT",
-                    "Total_S TEXT",
-                    "TK_Jml TEXT",
-                    "TK_N TEXT",
-                    "TK_S TEXT",
-                    "KB_Jml TEXT",
-                    "KB_N TEXT",
-                    "KB_S TEXT",
-                    "TPA_Jml TEXT",
-                    "TPA_N TEXT",
-                    "TPA_S TEXT",
-                    "SPS_Jml TEXT",
-                    "SPS_N TEXT",
-                    "SPS_S TEXT",
-                    "PKBM_Jml TEXT",
-                    "PKBM_N TEXT",
-                    "PKBM_S TEXT",
-                    "SKB_Jml TEXT",
-                    "SKB_N TEXT",
-                    "SKB_S TEXT",
-                    "SD_Jml TEXT",
-                    "SD_N TEXT",
-                    "SD_S TEXT",
-                    "SMP_Jml TEXT",
-                    "SMP_N TEXT",
-                    "SMP_S TEXT",
-                    "SMA_Jml TEXT",
-                    "SMA_N TEXT",
-                    "SMA_S TEXT",
-                    "SMK_Jml TEXT",
-                    "SMK_N TEXT",
-                    "SMK_S TEXT",
-                    "SLB_Jml TEXT",
-                    "SLB_N TEXT",
-                    "SLB_S TEXT",
-                    "nasional_id INTEGER",
-                    "progress INTEGER DEFAULT 0",
-                    "FOREIGN KEY(nasional_id) REFERENCES nasional(id)",
-                ],
-            ),
-            (
-                "kabupaten",
-                [
-                    "id INTEGER PRIMARY KEY",
-                    "nama TEXT",
-                    "url TEXT",
-                    "Wilayah TEXT",
-                    "Total_Jml TEXT",
-                    "Total_N TEXT",
-                    "Total_S TEXT",
-                    "TK_Jml TEXT",
-                    "TK_N TEXT",
-                    "TK_S TEXT",
-                    "KB_Jml TEXT",
-                    "KB_N TEXT",
-                    "KB_S TEXT",
-                    "TPA_Jml TEXT",
-                    "TPA_N TEXT",
-                    "TPA_S TEXT",
-                    "SPS_Jml TEXT",
-                    "SPS_N TEXT",
-                    "SPS_S TEXT",
-                    "PKBM_Jml TEXT",
-                    "PKBM_N TEXT",
-                    "PKBM_S TEXT",
-                    "SKB_Jml TEXT",
-                    "SKB_N TEXT",
-                    "SKB_S TEXT",
-                    "SD_Jml TEXT",
-                    "SD_N TEXT",
-                    "SD_S TEXT",
-                    "SMP_Jml TEXT",
-                    "SMP_N TEXT",
-                    "SMP_S TEXT",
-                    "SMA_Jml TEXT",
-                    "SMA_N TEXT",
-                    "SMA_S TEXT",
-                    "SMK_Jml TEXT",
-                    "SMK_N TEXT",
-                    "SMK_S TEXT",
-                    "SLB_Jml TEXT",
-                    "SLB_N TEXT",
-                    "SLB_S TEXT",
-                    "provinsi_id INTEGER",
-                    "progress INTEGER DEFAULT 0",
-                    "FOREIGN KEY(provinsi_id) REFERENCES provinsi(id)",
-                ],
-            ),
-            (
-                "kecamatan",
-                [
-                    "id INTEGER PRIMARY KEY",
-                    "nama TEXT",
-                    "url TEXT",
-                    "Wilayah TEXT",
-                    "Total_Jml TEXT",
-                    "Total_N TEXT",
-                    "Total_S TEXT",
-                    "TK_Jml TEXT",
-                    "TK_N TEXT",
-                    "TK_S TEXT",
-                    "KB_Jml TEXT",
-                    "KB_N TEXT",
-                    "KB_S TEXT",
-                    "TPA_Jml TEXT",
-                    "TPA_N TEXT",
-                    "TPA_S TEXT",
-                    "SPS_Jml TEXT",
-                    "SPS_N TEXT",
-                    "SPS_S TEXT",
-                    "PKBM_Jml TEXT",
-                    "PKBM_N TEXT",
-                    "PKBM_S TEXT",
-                    "SKB_Jml TEXT",
-                    "SKB_N TEXT",
-                    "SKB_S TEXT",
-                    "SD_Jml TEXT",
-                    "SD_N TEXT",
-                    "SD_S TEXT",
-                    "SMP_Jml TEXT",
-                    "SMP_N TEXT",
-                    "SMP_S TEXT",
-                    "SMA_Jml TEXT",
-                    "SMA_N TEXT",
-                    "SMA_S TEXT",
-                    "SMK_Jml TEXT",
-                    "SMK_N TEXT",
-                    "SMK_S TEXT",
-                    "SLB_Jml TEXT",
-                    "SLB_N TEXT",
-                    "SLB_S TEXT",
-                    "kabupaten_id INTEGER",
-                    "progress INTEGER DEFAULT 0",
-                    "FOREIGN KEY(kabupaten_id) REFERENCES kabupaten(id)",
-                ],
-            ),
-            (
-                "sekolah",
-                [
-                    "id INTEGER PRIMARY KEY",
-                    "nama TEXT",
-                    "url TEXT",
-                    "NamaSekolah TEXT",
-                    "NPSN TEXT",
-                    "BP TEXT",
-                    "Status TEXT",
-                    "Last_Sync TEXT",
-                    "Jml_Sync TEXT",
-                    "PD TEXT",
-                    "Rombel TEXT",
-                    "Guru TEXT",
-                    "Pegawai TEXT",
-                    "Kelas TEXT",
-                    "Lab TEXT",
-                    "Perpus TEXT",
-                    "kecamatan_id INTEGER",
-                    "progress INTEGER DEFAULT 0",
-                    "FOREIGN KEY(kecamatan_id) REFERENCES kecamatan(id)",
-                ],
-            ),
-        ]
+    def get_unprocessed_provinsi(self):
+        try:
+            response = self.client.table('provinsi').select('*').eq('progress', 0).execute()
+            return response.data
+        except Exception as e:
+            print(f"Error fetching unprocessed nasional: {e}")
+            return []
 
-        for table_name, columns in tables:
-            create_query = f"""
-            CREATE TABLE IF NOT EXISTS {table_name} (
-                {', '.join(columns)}
-            )
-            """
-            self.cursor.execute(create_query)
-        self.conn.commit()
+    def get_unprocessed_kabupaten(self):
+        try:
+            response = self.client.table('kabupaten').select('*').eq('progress', 0).execute()
+            return response.data
+        except Exception as e:
+            print(f"Error fetching unprocessed kabupaten: {e}")
+            return []
 
-    def close(self):
-        self.conn.close()
+    def get_unprocessed_kecamatan(self):
+        try:
+            response = self.client.table('kecamatan').select('*').eq('progress', 0).execute()
+            return response.data
+        except Exception as e:
+            print(f"Error fetching unprocessed kecamatan: {e}")
+            return []
+
+    def insert_nasional(self, data):
+        try:
+            quoted_data = {}
+            for key, value in data.items():
+                if ' ' in key:
+                    quoted_data[f'"{key}"'] = value
+                else:
+                    quoted_data[key] = value
+
+            response = self.client.table('nasional').insert(quoted_data).execute()
+            return response.data[0]['id'] if response.data else None
+        except Exception as e:
+            print(f"Error inserting nasional data: {e}")
+            return None
+
+    def insert_provinsi(self, data):
+        try:
+            existing = self.client.table('provinsi').select('*').eq('nama', data['nama']).execute()
+
+            if existing.data:
+                return existing.data[0]['id']
+
+            quoted_data = {}
+            for key, value in data.items():
+                if ' ' in key:
+                    quoted_data[f'"{key}"'] = value
+                else:
+                    quoted_data[key] = value
+
+            response = self.client.table('provinsi').insert(quoted_data).execute()
+            return response.data[0]['id'] if response.data else None
+        except Exception as e:
+            print(f"Error inserting provinsi data: {e}")
+            return None
+
+    def insert_kabupaten(self, data):
+        try:
+            quoted_data = {}
+            for key, value in data.items():
+                if ' ' in key:
+                    quoted_data[f'"{key}"'] = value
+                else:
+                    quoted_data[key] = value
+
+            response = self.client.table('kabupaten').insert(quoted_data).execute()
+            return response.data[0]['id'] if response.data else None
+        except Exception as e:
+            print(f"Error inserting kabupaten data: {e}")
+            return None
+
+    def insert_kecamatan(self, data):
+        try:
+            quoted_data = {}
+            for key, value in data.items():
+                if ' ' in key:
+                    quoted_data[f'"{key}"'] = value
+                else:
+                    quoted_data[key] = value
+
+            response = self.client.table('kecamatan').insert(quoted_data).execute()
+            return response.data[0]['id'] if response.data else None
+        except Exception as e:
+            print(f"Error inserting kecamatan data: {e}")
+            return None
+
+    def insert_sekolah(self, data):
+        try:
+            quoted_data = {}
+            for key, value in data.items():
+                if ' ' in key:
+                    quoted_data[f'"{key}"'] = value
+                else:
+                    quoted_data[key] = value
+
+            response = self.client.table('sekolah').insert(quoted_data).execute()
+            return response.data[0]['id'] if response.data else None
+        except Exception as e:
+            print(f"Error inserting sekolah data: {e}")
+            return None
+
+    def update_progress(self, table, record_id):
+        try:
+            response = self.client.table(table).update({'progress': 1}).eq('id', record_id).execute()
+            return True
+        except Exception as e:
+            print(f"Error updating progress for {table}: {e}")
+            return False
